@@ -5,11 +5,10 @@ require "open-uri"
 
 class ProjectMetricTravisCi
   attr_reader :raw_data
-  attr_reader :main_builds
 
   def initialize(credentials, raw_data = nil)
     @identifier = URI::parse(credentials[:github_project]).path[1..-1]
-    @main_branch = credentials[:main_branch]
+    @main_branch = credentials[:github_main_branch]
     @conn = Faraday.new(url: 'https://api.travis-ci.org')
     @conn.headers['Accept'] = 'application/vnd.travis-ci.2+json'
     @conn.headers['Content-Type'] = 'application/json'
@@ -49,7 +48,7 @@ class ProjectMetricTravisCi
   end
 
   def self.credentials
-    %I[github_project main_branch]
+    %I[github_project github_main_branch]
   end
 
   private

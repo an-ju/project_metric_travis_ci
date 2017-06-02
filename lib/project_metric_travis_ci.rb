@@ -16,8 +16,8 @@ class ProjectMetricTravisCi
   end
 
   def refresh
-    @raw_data ||= builds
     @image = @score = nil
+    @raw_data ||= builds
   end
 
   def raw_data=(new)
@@ -40,11 +40,11 @@ class ProjectMetricTravisCi
   def image
     @raw_data ||= builds
     filter_builds
-    { chartType: 'travis_ci',
-      titleText: 'Travis CI builds',
-      data: { total_builds: @main_builds.length,
-              success_builds: @main_builds.select { |bd| bd['state'].eql? 'passed' }.length,
-              current_state: @main_builds.empty? ? nil : @main_builds[0]['state'] } }
+    @image ||= { chartType: 'travis_ci',
+                  titleText: 'Travis CI builds',
+                  data: { total_builds: @main_builds.length,
+                          success_builds: @main_builds.select { |bd| bd['state'].eql? 'passed' }.length,
+                          current_state: @main_builds.empty? ? nil : @main_builds[0]['state'] } }.to_json
   end
 
   def self.credentials

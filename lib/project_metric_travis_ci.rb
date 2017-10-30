@@ -41,7 +41,7 @@ class ProjectMetricTravisCi
     @image ||= { chartType: 'travis_ci',
                  titleText: 'Travis CI builds',
                  data: {
-                   failure_times: failure_times,
+                   # failure_times: failure_times,
                    total_builds: @main_builds.length,
                    success_builds: success_builds.length,
                    current_state: current_state
@@ -74,21 +74,21 @@ class ProjectMetricTravisCi
     @main_builds.empty? ? nil : @main_builds[0]['state']
   end
 
-  def failure_times
-    starting_time = nil
-    failures_periods = []
-
-    @main_builds.sort_by { |bd| Time.parse bd['started_at'] }.each do |bd|
-      if bd['state'].eql? 'failed'
-        starting_time ||= Time.parse(bd['started_at'])
-      elsif bd['state'].eql? 'passed'
-        unless starting_time.nil?
-          failures_periods.push(Time.parse(bd['started_at']) - starting_time)
-          starting_time = nil
-        end
-      end
-    end
-    failures_periods
-  end
+  # def failure_times
+  #   starting_time = nil
+  #   failures_periods = []
+  #
+  #   @main_builds.sort_by { |bd| Time.parse bd['started_at'] }.each do |bd|
+  #     if bd['state'].eql? 'failed'
+  #       starting_time ||= Time.parse(bd['started_at'])
+  #     elsif bd['state'].eql? 'passed'
+  #       unless starting_time.nil?
+  #         failures_periods.push(Time.parse(bd['started_at']) - starting_time)
+  #         starting_time = nil
+  #       end
+  #     end
+  #   end
+  #   failures_periods
+  # end
 
 end

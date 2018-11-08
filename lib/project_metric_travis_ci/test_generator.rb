@@ -6,10 +6,8 @@ class ProjectMetricTravisCi
   def self.fake_metric(value)
     build_states = Array.new(value, true) + Array.new(30 - value, false)
     build_states.shuffle!
-    prev_state = false
     builds = build_states.map.with_index do |is_failure, ind|
-      is_failure ? bad_build(ind, prev_state) : good_build(ind, prev_state)
-      prev_state = is_failure
+      is_failure ? bad_build(ind, build_states[ind-1]) : good_build(ind, build_states[ind-1])
     end
     { image:
           { chartType: 'travis_ci',

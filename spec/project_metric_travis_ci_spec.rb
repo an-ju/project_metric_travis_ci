@@ -39,6 +39,15 @@ RSpec.describe ProjectMetricTravisCi do
 
   it 'generates fake data' do
     expect(ProjectMetricTravisCi.fake_data.length).to eql(3)
+    expect(ProjectMetricTravisCi.fake_data.first).to have_key(:image)
+  end
+
+  it 'contains the right fake metric' do
+    image_data = JSON.parse(ProjectMetricTravisCi.fake_data.first[:image])
+    expect(image_data['data']).to have_key('builds')
+    image_data['data']['builds'].each do |bd|
+      expect(bd['state']).not_to be_nil
+    end
   end
 
 end

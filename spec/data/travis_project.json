@@ -1,0 +1,43 @@
+{
+  "@type": "repository",
+  "@href": "/repo/6784605",
+  "@representation": "standard",
+  "@permissions": {
+    "read": true,
+    "activate": true,
+    "deactivate": true,
+    "migrate": true,
+    "star": true,
+    "unstar": true,
+    "create_cron": true,
+    "create_env_var": true,
+    "create_key_pair": true,
+    "delete_key_pair": true,
+    "create_request": true,
+    "admin": true
+  },
+  "id": 6784605,
+  "name": "project_metric_code_climate",
+  "slug": "an-ju/project_metric_code_climate",
+  "description": "Metrics for Projects based on their CodeClimate stats",
+  "github_id": 70871552,
+  "github_language": null,
+  "active": true,
+  "private": false,
+  "owner": {
+    "@type": "user",
+    "id": 431526,
+    "login": "an-ju",
+    "@href": "/user/431526"
+  },
+  "default_branch": {
+    "@type": "branch",
+    "@href": "/repo/6784605/branch/master",
+    "@representation": "minimal",
+    "name": "master"
+  },
+  "starred": false,
+  "managed_by_installation": true,
+  "active_on_org": false,
+  "migration_status": null
+}

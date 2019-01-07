@@ -13,7 +13,7 @@ class ProjectMetricTravisCi
           { chartType: 'travis_ci',
             data:
                 { builds: builds,
-                  build_link: 'https://travis-ci.com/an-ju/project_metric_code_climate/builds/90357060' } }.to_json,
+                  build_link: 'https://travis-ci.com/an-ju/project_metric_code_climate/builds/90357060' } },
       score: 11.0 * value } #TODO: This is inconsistent
   end
 

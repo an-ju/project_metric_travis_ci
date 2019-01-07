@@ -4,75 +4,62 @@ require "faraday"
 require "json"
 require "open-uri"
 require 'time'
+require 'project_metric_base'
 
 class ProjectMetricTravisCi
-  attr_reader :raw_data
+  include ProjectMetricBase
+  add_credentials %I[github_project travis_token]
+  add_raw_data %w[travis_repo travis_builds travis_logs]
 
   def initialize(credentials, raw_data = nil)
     @identifier = URI::parse(credentials[:github_project]).path[1..-1]
 
-    @conn = Faraday.new(url: 'https://api.travis-ci.org')
+    @conn = Faraday.new(url: 'https://api.travis-ci.com')
     @conn.headers['Travis-API-Version'] = '3'
     @conn.headers['Authorization'] = "token #{credentials[:travis_token]}"
 
-    @raw_data = raw_data
-  end
-
-  def refresh
-    set_repo
-    set_builds
-    set_logs
-    @raw_data = {
-        builds: @builds,
-        logs: @logs
-    }.to_json
-  end
-
-  def raw_data=(new)
-    @raw_data = new
+    complete_with raw_data
   end
 
   def score
-    refresh unless @raw_data
     fix_time
   end
 
   def image
-    refresh unless @raw_data
     @image ||= { chartType: 'travis_ci',
                  data: {
-                   builds: @builds,
+                   builds: master_builds,
                    build_link: build_link
-                 } }.to_json
+                 } }
   end
 
-  def commit_sha
-    refresh unless @raw_data
-    @builds.first['commit']['sha']
-  end
-
-  def self.credentials
-    %I[github_project travis_token]
+  def obj_id
+    master_builds.first['commit']['sha']
   end
 
   private
 
-  def set_repo
-    @repo = JSON.parse(@conn.get("repo/#{CGI.escape(@identifier)}").body)
-    @default_branch = @repo['default_branch']['name']
+  def travis_repo
+    @travis_repo = JSON.parse(@conn.get("repo/#{CGI.escape(@identifier)}").body)
   end
 
-  def set_builds
-    @builds = JSON.parse(@conn.get("repos/#{@repo['id']}/builds",
-                                   limit: 30,
-                                   'build.name' => @default_branch).body)['builds']
+  def default_branch
+    @travis_repo['default_branch']['name']
   end
 
-  def set_logs
-    jobs = @builds.first['jobs']
-    @logs = jobs.map do |job|
+  def travis_builds
+    @travis_builds = JSON.parse(@conn.get("repos/#{@travis_repo['id']}/builds").body)['builds']
+  end
+
+  def master_builds
+    @travis_builds.select { |bd| bd['branch']['name'].eql? default_branch }
+  end
+
+  def travis_logs
+    jobs = master_builds.first['jobs']
+    @travis_logs = jobs.map do |job|
       @conn.get do |req|
-        req.url "job/#{job.id}/log"
+        req.url "job/#{job['id']}/log"
         req.headers['Accept'] = 'plain/text'
       end.body
     end
@@ -82,7 +69,7 @@ class ProjectMetricTravisCi
     failure_time = 0
     fix_times = 0
     prev_bd = nil
-    @builds.each do |bd|
+    master_builds.each do |bd|
       if prev_bd
         if bd['state'] == 'failed'
           failure_time += start_time(bd) - start_time(prev_bd)
@@ -102,7 +89,7 @@ class ProjectMetricTravisCi
   end
 
   def build_link
-    "https://travis-ci.com/#{@identifier}/builds/#{@builds.first['id']}"
+    "https://travis-ci.com/#{@identifier}/builds/#{master_builds.first['id']}"
   end
 
 end

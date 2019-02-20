@@ -13,8 +13,9 @@ class ProjectMetricTravisCi
           { chartType: 'travis_ci',
             data:
                 { builds: builds,
-                  build_link: 'https://travis-ci.com/an-ju/project_metric_code_climate/builds/90357060' } },
-      score: 11.0 * value } #TODO: This is inconsistent
+                  build_link: 'https://travis-ci.com/an-ju/project_metric_code_climate/builds/90357060',
+                  fix_time: 10 * rand(10) } },
+      score: builds.first['state'].eql?('passed') ? 100 : 0 } 
   end
 
   def self.good_build(ind, prev_state)

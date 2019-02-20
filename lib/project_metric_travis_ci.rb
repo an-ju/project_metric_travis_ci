@@ -22,14 +22,15 @@ class ProjectMetricTravisCi
   end
 
   def score
-    fix_time
+    master_builds.first['state'].eql?('passed') ? 100 : 0
   end
 
   def image
     @image ||= { chartType: 'travis_ci',
                  data: {
                    builds: master_builds,
-                   build_link: build_link
+                   build_link: build_link,
+                   fix_time: fix_time
                  } }
   end
 
@@ -69,7 +70,7 @@ class ProjectMetricTravisCi
     failure_time = 0
     fix_times = 0
     prev_bd = nil
-    master_builds.each do |bd|
+    master_builds.reverse.each do |bd|
       if prev_bd
         if bd['state'] == 'failed'
           failure_time += start_time(bd) - start_time(prev_bd)

@@ -16,7 +16,7 @@ RSpec.describe ProjectMetricTravisCi do
   end
 
   it "generates score correctly" do
-    expect(project_metric_travis_ci.score).to eql(0)
+    expect(project_metric_travis_ci.score).to eql(100)
   end
 
   it 'generates image correctly' do

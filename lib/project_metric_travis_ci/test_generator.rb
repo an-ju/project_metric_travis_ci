@@ -15,7 +15,7 @@ class ProjectMetricTravisCi
                 { builds: builds,
                   build_link: 'https://travis-ci.com/an-ju/project_metric_code_climate/builds/90357060',
                   fix_time: 10 * rand(10) } },
-      score: builds.first['state'].eql?('passed') ? 100 : 0 } 
+      score: builds.first[:state].eql?('passed') ? 100 : 0 } 
   end
 
   def self.good_build(ind, prev_state)

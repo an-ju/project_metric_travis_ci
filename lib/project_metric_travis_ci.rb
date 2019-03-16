@@ -49,7 +49,7 @@ class ProjectMetricTravisCi
   end
 
   def travis_builds
-    @travis_builds = JSON.parse(@conn.get("repos/#{@travis_repo['id']}/builds").body)['builds']
+    @travis_builds = JSON.parse(@conn.get("repos/#{CGI.escape(@identifier)}/builds").body)['builds']
   end
 
   def master_builds

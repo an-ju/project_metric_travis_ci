@@ -4,7 +4,7 @@ RSpec.describe ProjectMetricTravisCi do
   before :each do
     stub_request(:get, 'https://api.travis-ci.com/repo/an-ju%2Fteamscope')
       .to_return(body: File.read('spec/data/travis_project.json'))
-    stub_request(:get, 'https://api.travis-ci.com/repos/6784605/builds')
+    stub_request(:get, 'https://api.travis-ci.com/repos/an-ju%2Fteamscope/builds')
       .to_return(body: File.read('spec/data/travis_builds.json'))
     stub_request(:get, /.*/)
       .with(headers: { 'Accept': 'plain/text' })

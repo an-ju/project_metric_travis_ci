@@ -8,13 +8,14 @@ require 'project_metric_base'
 
 class ProjectMetricTravisCi
   include ProjectMetricBase
-  add_credentials %I[github_project travis_token]
+  add_credentials %I[github_project travis_token travis_service_loc]
   add_raw_data %w[travis_repo travis_builds travis_logs]
 
   def initialize(credentials, raw_data = nil)
     @identifier = URI::parse(credentials[:github_project]).path[1..-1]
+    @service_loc = credentials[:travis_service_loc]
 
-    @conn = Faraday.new(url: 'https://api.travis-ci.com')
+    @conn = Faraday.new(url: "https://api.travis-ci.#{@service_loc}")
     @conn.headers['Travis-API-Version'] = '3'
     @conn.headers['Authorization'] = "token #{credentials[:travis_token]}"
 
@@ -90,7 +91,7 @@ class ProjectMetricTravisCi
   end
 
   def build_link
-    "https://travis-ci.com/#{@identifier}/builds/#{master_builds.first['id']}"
+    "https://travis-ci.#{@service_loc}/#{@identifier}/builds/#{master_builds.first['id']}"
   end
 
 end

@@ -12,7 +12,9 @@ RSpec.describe ProjectMetricTravisCi do
   end
 
   subject(:project_metric_travis_ci) do
-    described_class.new(github_project: 'https://github.com/an-ju/teamscope', travis_token: 'token')
+    described_class.new(github_project: 'https://github.com/an-ju/teamscope',
+                        travis_token: 'token',
+                        travis_service_loc: 'com')
   end
 
   it "generates score correctly" do

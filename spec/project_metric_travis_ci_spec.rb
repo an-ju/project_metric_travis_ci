@@ -7,7 +7,7 @@ RSpec.describe ProjectMetricTravisCi do
     stub_request(:get, 'https://api.travis-ci.com/repo/an-ju%2Fteamscope/builds')
       .to_return(body: File.read('spec/data/travis_builds.json'))
     stub_request(:get, /.*/)
-      .with(headers: { 'Accept': 'plain/text' })
+      .with(headers: { 'Accept': 'text/plain' })
       .to_return(body: 'shell output')
   end
 

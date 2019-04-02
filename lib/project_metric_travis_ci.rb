@@ -1,6 +1,7 @@
 require "project_metric_travis_ci/version"
 require 'project_metric_travis_ci/test_generator'
 require "faraday"
+require 'faraday_middleware'
 require "json"
 require "open-uri"
 require 'time'
@@ -15,7 +16,10 @@ class ProjectMetricTravisCi
     @identifier = URI::parse(credentials[:github_project]).path[1..-1]
     @service_loc = credentials[:travis_service_loc]
 
-    @conn = Faraday.new(url: "https://api.travis-ci.#{@service_loc}")
+    @conn = Faraday.new(url: "https://api.travis-ci.#{@service_loc}") do |conn|
+      conn.use :gzip
+      conn.adapter Faraday.default_adapter
+    end
     @conn.headers['Travis-API-Version'] = '3'
     @conn.headers['Authorization'] = "token #{credentials[:travis_token]}"
 
@@ -62,8 +66,8 @@ class ProjectMetricTravisCi
     @travis_logs = jobs.map do |job|
       @conn.get do |req|
         req.url "job/#{job['id']}/log"
-        req.headers['Accept'] = 'plain/text'
-      end.body
+        req.headers['Accept'] = 'text/plain'
+      end.body.force_encoding("utf-8")
     end
   end
 

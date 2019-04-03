@@ -27,19 +27,26 @@ class ProjectMetricTravisCi
   end
 
   def score
+    return -1 if master_builds.empty?
+
     master_builds.first['state'].eql?('passed') ? 100 : 0
   end
 
   def image
-    @image ||= { chartType: 'travis_ci',
-                 data: {
-                   builds: master_builds,
-                   build_link: build_link,
-                   fix_time: fix_time
-                 } }
+    if master_builds.empty?
+      return { chatType: 'error_message',
+               message: "No build found in the master branch #{default_branch}" }
+    end
+
+    { chartType: 'travis_ci',
+      data: { builds: master_builds,
+              build_link: build_link,
+              fix_time: fix_time }}
   end
 
   def obj_id
+    return nil if master_builds.empty?
+
     master_builds.first['commit']['sha']
   end
 
@@ -62,8 +69,11 @@ class ProjectMetricTravisCi
   end
 
   def travis_logs
-    jobs = master_builds.first['jobs']
-    @travis_logs = jobs.map do |job|
+    if master_builds.empty?
+      @travis_logs = nil
+      return @travis_logs
+    end
+    @travis_logs = master_builds.first['jobs'].map do |job|
       @conn.get do |req|
         req.url "job/#{job['id']}/log"
         req.headers['Accept'] = 'text/plain'

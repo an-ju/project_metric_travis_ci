@@ -34,7 +34,7 @@ class ProjectMetricTravisCi
 
   def image
     if master_builds.empty?
-      return { chatType: 'error_message',
+      return { chartType: 'error_message',
                message: "No build found in the master branch #{default_branch}" }
     end
 
